@@ -17,6 +17,9 @@ public class PaymentsController : Controller
 
     public PaymentsController(ILogger<PaymentsController> logger, IPaymentsRepository paymentsRepository)
     {
+        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(paymentsRepository);
+
         _logger = logger;
         _paymentsRepository = paymentsRepository;
     }

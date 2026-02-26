@@ -23,7 +23,7 @@ public class PaymentsControllerTests
         _client = webApplicationFactory.WithWebHostBuilder(builder =>
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton(_paymentsRepository)))
-            .CreateClient();
+            .CreateClient(new() { BaseAddress = new Uri("https://localhost/api/v1.0/") });
     }
     
     [Fact]
@@ -43,7 +43,7 @@ public class PaymentsControllerTests
         _paymentsRepository.Add(payment);
 
         // Act
-        var response = await _client.GetAsync($"/api/Payments/{payment.Id}");
+        var response = await _client.GetAsync($"Payments/{payment.Id}");
         var paymentResponse = await response.Content.ReadFromJsonAsync<PostPaymentResponse>();
         
         // Assert
@@ -62,7 +62,7 @@ public class PaymentsControllerTests
     public async Task GetPaymentAsync_RequestNonExistentPaymentId_RespondsNotFound()
     {
         // Act
-        var response = await _client.GetAsync($"/api/Payments/{Guid.NewGuid()}");
+        var response = await _client.GetAsync($"Payments/{Guid.NewGuid()}");
         
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -72,7 +72,7 @@ public class PaymentsControllerTests
     public async Task GetPaymentAsync_RequestEmptyGuid_RespondsWithBadRequest()
     {
         // Act
-        var response = await _client.GetAsync($"/api/Payments/{Guid.Empty}");
+        var response = await _client.GetAsync($"Payments/{Guid.Empty}");
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);

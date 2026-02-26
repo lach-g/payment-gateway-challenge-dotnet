@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Asp.Versioning;
+
+using Microsoft.AspNetCore.Mvc;
 
 using PaymentGateway.Api.Models.Responses;
 using PaymentGateway.Api.Services;
 
 namespace PaymentGateway.Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
+[ApiVersion("1.0")]
 [ApiController]
 public class PaymentsController : Controller
 {

@@ -12,10 +12,12 @@ namespace PaymentGateway.Api.Controllers;
 [ApiController]
 public class PaymentsController : Controller
 {
+    private readonly ILogger<PaymentsController> _logger;
     private readonly IPaymentsRepository _paymentsRepository;
 
-    public PaymentsController(IPaymentsRepository paymentsRepository)
+    public PaymentsController(ILogger<PaymentsController> logger, IPaymentsRepository paymentsRepository)
     {
+        _logger = logger;
         _paymentsRepository = paymentsRepository;
     }
 
@@ -24,13 +26,28 @@ public class PaymentsController : Controller
     {
         if (id == Guid.Empty) 
         {
+            _logger.LogWarning("Received request for payment with empty GUID.");
             return BadRequest(new ErrorResponse { Message = "Payment ID cannot be empty." });
         }
 
+        _paymentsRepository.Add(new PostPaymentResponse
+        {
+            Id = Guid.Parse("b6b6c82a-16a5-4b3b-8207-464c20a6d205"),
+            Status = Models.PaymentStatus.Authorized,
+            CardNumberLastFour = 1234,
+            ExpiryMonth = 12,
+            ExpiryYear = 2025,
+            Currency = "USD",
+            Amount = 100
+        });
+
         if (!_paymentsRepository.TryGet(id, out var payment))
         {
+            _logger.LogWarning("Received request for non-existent payment with ID {Id}.", id);
             return NotFound(new ErrorResponse { Message = $"Payment with ID {id} not found." });
         }
+
+        _logger.LogInformation("Responding with payment for ID {Id} successfully.", id);
 
         return new OkObjectResult(payment);
     }

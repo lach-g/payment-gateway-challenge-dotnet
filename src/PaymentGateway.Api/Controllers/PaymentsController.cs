@@ -30,17 +30,6 @@ public class PaymentsController : Controller
             return BadRequest(new ErrorResponse { Message = "Payment ID cannot be empty." });
         }
 
-        _paymentsRepository.Add(new PostPaymentResponse
-        {
-            Id = Guid.Parse("b6b6c82a-16a5-4b3b-8207-464c20a6d205"),
-            Status = Models.PaymentStatus.Authorized,
-            CardNumberLastFour = 1234,
-            ExpiryMonth = 12,
-            ExpiryYear = 2025,
-            Currency = "USD",
-            Amount = 100
-        });
-
         if (!_paymentsRepository.TryGet(id, out var payment))
         {
             _logger.LogWarning("Received request for non-existent payment with ID {Id}.", id);

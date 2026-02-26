@@ -9,17 +9,25 @@ namespace PaymentGateway.Api.Controllers;
 [ApiController]
 public class PaymentsController : Controller
 {
-    private readonly PaymentsRepository _paymentsRepository;
+    private readonly IPaymentsRepository _paymentsRepository;
 
-    public PaymentsController(PaymentsRepository paymentsRepository)
+    public PaymentsController(IPaymentsRepository paymentsRepository)
     {
         _paymentsRepository = paymentsRepository;
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<PostPaymentResponse?>> GetPaymentAsync(Guid id)
+    public ActionResult<PostPaymentResponse> GetPaymentAsync(Guid id)
     {
-        var payment = _paymentsRepository.Get(id);
+        if (id == Guid.Empty) 
+        {
+            return BadRequest(new ErrorResponse { Message = "Payment ID cannot be empty." });
+        }
+
+        if (!_paymentsRepository.TryGet(id, out var payment))
+        {
+            return NotFound(new ErrorResponse { Message = $"Payment with ID {id} not found." });
+        }
 
         return new OkObjectResult(payment);
     }

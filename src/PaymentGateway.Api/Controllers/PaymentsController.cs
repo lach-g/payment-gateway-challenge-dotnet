@@ -36,7 +36,7 @@ public class PaymentsController : Controller
         if (!_paymentsRepository.TryGet(id, out var payment))
         {
             _logger.LogWarning("Received request for non-existent payment with ID {Id}.", id);
-            return NotFound(new ErrorResponse { Message = $"Payment with ID {id} not found." });
+            return NotFound(new ErrorResponse { Message = $"Payment with ID {id} not found.", KeyValuePairs = new Dictionary<string, object> { { "PaymentId", id } } });
         }
 
         _logger.LogInformation("Responding with payment for ID {Id} successfully.", id);

@@ -1,3 +1,4 @@
+using PaymentGateway.Api.Constants;
 using PaymentGateway.Api.Models.Requests;
 
 namespace PaymentGateway.Api.Services;
@@ -16,12 +17,6 @@ public interface IPaymentValidator
 public class PaymentValidator : IPaymentValidator
 {
     private readonly ILogger<PaymentValidator> _logger;
-    private static readonly HashSet<string> _acceptedCurrencies = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "USD",
-        "GBP",
-        "AUD",
-    };
 
     public PaymentValidator(ILogger<PaymentValidator> logger)
     {
@@ -47,19 +42,13 @@ public class PaymentValidator : IPaymentValidator
         if (!IsValidCardNumber(request.CardNumber))
         {
             _logger.LogWarning("Validation failed: Card number is invalid.");
-            errors.Add(nameof(request.CardNumber), "Card number must be between 14 and 19 digits.");
+            errors.Add(nameof(request.CardNumber), $"Card number must be between {PaymentValidationConstants.CardNumberMinLength} and {PaymentValidationConstants.CardNumberMaxLength} digits.");
         }
 
         if (!IsValidExpiryDate(request.ExpiryMonth, request.ExpiryYear))
         {
             _logger.LogWarning("Validation failed: Card has expired.");
-            errors.Add(nameof(request.ExpiryMonth), "Card has expired.");
-        }
-
-        if (!IsValidCurrency(request.Currency))
-        {
-            _logger.LogWarning("Validation failed: Currency {Currency} is not supported.", request.Currency);
-            errors.Add(nameof(request.Currency), "Currency is not supported.");
+            errors.Add($"{nameof(request.ExpiryMonth)}/{request.ExpiryYear}", "Card has expired.");
         }
 
         if (!IsValidAmount(request.Amount))
@@ -71,7 +60,7 @@ public class PaymentValidator : IPaymentValidator
         if (!IsValidCvv(request.Cvv))
         {
             _logger.LogWarning("Validation failed: CVV is invalid.");
-            errors.Add(nameof(request.Cvv), "CVV must be a 3 or 4 digit number.");
+            errors.Add(nameof(request.Cvv), $"CVV must be a {PaymentValidationConstants.CvvMinLength} or {PaymentValidationConstants.CvvMaxLength} digit number.");
         }
 
         _logger.LogInformation("Validation completed with {ErrorCount} error(s).", errors.Count);
@@ -83,21 +72,20 @@ public class PaymentValidator : IPaymentValidator
         };
     }
 
-    private static bool IsValidCardNumber(int cardNumber)
+    private static bool IsValidCardNumber(string cardNumber)
     {
-        var cardNumberString = cardNumber.ToString();
-        return cardNumberString.Length >= 13 && cardNumberString.Length <= 19;
+        return !string.IsNullOrWhiteSpace(cardNumber) &&
+            cardNumber.Length >= PaymentValidationConstants.CardNumberMinLength &&
+            cardNumber.Length <= PaymentValidationConstants.CardNumberMaxLength &&
+            cardNumber.All(char.IsDigit);
     }
 
     private static bool IsValidExpiryDate(int month, int year)
     {
         var now = DateTime.UtcNow;
-        return year > now.Year || (year == now.Year && month > now.Month);
-    }
-
-    private static bool IsValidCurrency(string currency)
-    {
-        return _acceptedCurrencies.Contains(currency);
+        return month >= 1 &&
+            month <= 12 && 
+            (year > now.Year || (year == now.Year && month >= now.Month));
     }
 
     private static bool IsValidAmount(int amount)
@@ -105,9 +93,10 @@ public class PaymentValidator : IPaymentValidator
         return amount > 0;
     }
 
-    private static bool IsValidCvv(int cvv)
+    private static bool IsValidCvv(string cvv)
     {
-        var cvvString = cvv.ToString();
-        return cvvString.Length == 3 || cvvString.Length == 4;
+        return !string.IsNullOrWhiteSpace(cvv) &&
+            (cvv.Length == PaymentValidationConstants.CvvMinLength || cvv.Length == PaymentValidationConstants.CvvMaxLength) &&
+            cvv.All(char.IsDigit);
     }
 }

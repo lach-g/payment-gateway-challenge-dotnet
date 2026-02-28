@@ -35,10 +35,10 @@ public class PaymentsControllerTests
             Id = Guid.NewGuid(),
             Status = PaymentStatus.Authorized,
             ExpiryYear = _random.Next(DateTime.Now.Year + 1, DateTime.Now.Year + 10),
-            ExpiryMonth = _random.Next(1, 12),
-            Amount = _random.Next(1, 10000),
-            CardNumberLastFour = _random.Next(1111, 9999),
-            Currency = "AUD"
+            ExpiryMonth = _random.Next(1, 13),
+            Amount = _random.Next(0, int.MaxValue) + 1,
+            CardNumberLastFour = string.Concat(Enumerable.Range(4, 4).Select(_ => _random.Next(10)).ToArray()),
+            Currency = AcceptedCurrency.USD
         };
         _paymentsRepository.Add(payment);
 
@@ -49,7 +49,7 @@ public class PaymentsControllerTests
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(paymentResponse);
-        Assert.Equal(payment.Id, paymentResponse.Id);
+        Assert.Equal(payment.Id, paymentResponse!.Id);
         Assert.Equal(payment.Status, paymentResponse.Status);
         Assert.Equal(payment.ExpiryYear, paymentResponse.ExpiryYear);
         Assert.Equal(payment.ExpiryMonth, paymentResponse.ExpiryMonth);

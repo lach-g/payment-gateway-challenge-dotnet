@@ -1,5 +1,7 @@
 using Asp.Versioning;
 
+using PaymentGateway.Api;
+
 using PaymentGateway.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,7 @@ builder.Services.AddApiVersioning(options =>
 });
 
 builder.Services.AddSingleton<IPaymentsRepository, PaymentsRepository>();
+builder.Services.AddBankClient(builder.Configuration);
 
 var app = builder.Build();
 

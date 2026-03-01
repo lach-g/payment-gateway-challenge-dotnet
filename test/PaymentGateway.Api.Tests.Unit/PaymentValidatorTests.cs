@@ -23,7 +23,7 @@ public class PaymentValidatorTests
     public void Validate_ValidRequest_ReturnsValidResult()
     {
         // Arrange
-        var request = CreateValidRequest();
+        var request = ValuesGenerator.GenerateRandomValidPostPaymentRequest();
 
         // Act
         var result = _validator.Validate(request);
@@ -41,7 +41,7 @@ public class PaymentValidatorTests
     public void Validate_CardNumberBounds_ReturnsValidResult(string cardNumber)
     {
         // Arrange
-        var request = CreateValidRequest(cardNumber: cardNumber);
+        var request = ValuesGenerator.GeneratePostPaymentRequest(cardNumber: cardNumber);
 
         // Act
         var result = _validator.Validate(request);
@@ -60,15 +60,15 @@ public class PaymentValidatorTests
     public void Validate_InvalidCardNumber_ReturnsInvalidResult(string? invalidCardNumber)
     {
         // Arrange
-        var (expiryMonth, expiryYear) = GenerateValidExpiryDate();
+        var (expiryMonth, expiryYear) = ValuesGenerator.GenerateRandomValidExpiryDates();
         var request = new PostPaymentRequest
         {
             CardNumber = invalidCardNumber!,
             ExpiryMonth = expiryMonth,
             ExpiryYear = expiryYear,
-            Currency = GenerateRandomValidCurrency(),
-            Amount = GenerateRandomValidAmount(),
-            Cvv = GenerateRandomValidCvv(),
+            Currency = ValuesGenerator.GenerateRandomValidCurrency(),
+            Amount = ValuesGenerator.GenerateRandomValidAmount(),
+            Cvv = ValuesGenerator.GenerateRandomValidCvv(),
         };
 
         // Act
@@ -89,7 +89,7 @@ public class PaymentValidatorTests
     {
         // Arrange
         var now = DateTime.UtcNow;
-        var request = CreateValidRequest(expiryMonth: now.Month, expiryYear: now.Year);
+        var request = ValuesGenerator.GeneratePostPaymentRequest(expiryMonth: now.Month, expiryYear: now.Year);
 
         // Act
         var result = _validator.Validate(request);
@@ -105,16 +105,7 @@ public class PaymentValidatorTests
     public void Validate_InvalidExpiryMonth_ReturnsInvalidResult(int invalidExpiryMonth)
     {
         // Arrange
-        var (_, expiryYear) = GenerateValidExpiryDate();
-        var request = new PostPaymentRequest
-        {
-            CardNumber = GenerateRandomValidCardNumber(),
-            ExpiryMonth = invalidExpiryMonth,
-            ExpiryYear = expiryYear,
-            Currency = GenerateRandomValidCurrency(),
-            Amount = GenerateRandomValidAmount(),
-            Cvv = GenerateRandomValidCvv(),
-        };
+        var request = ValuesGenerator.GeneratePostPaymentRequest(expiryMonth: invalidExpiryMonth);
 
         // Act
         var result = _validator.Validate(request);
@@ -122,7 +113,7 @@ public class PaymentValidatorTests
         // Assert
         Assert.False(result.IsValid);
         Assert.Single(result.Errors);
-        Assert.Contains($"{nameof(request.ExpiryMonth)}/{expiryYear}", result.Errors.Keys);
+        Assert.Contains($"{nameof(request.ExpiryMonth)}/{request.ExpiryYear}", result.Errors.Keys);
     }
 
     [Fact]
@@ -130,16 +121,7 @@ public class PaymentValidatorTests
     {
         // Arrange
         var invalidExpiryYear = DateTime.UtcNow.Year - 1;
-        var (expiryMonth, _) = GenerateValidExpiryDate();
-        var request = new PostPaymentRequest
-        {
-            CardNumber = GenerateRandomValidCardNumber(),
-            ExpiryMonth = expiryMonth,
-            ExpiryYear = invalidExpiryYear,
-            Currency = GenerateRandomValidCurrency(),
-            Amount = GenerateRandomValidAmount(),
-            Cvv = GenerateRandomValidCvv(),
-        };
+        var request = ValuesGenerator.GeneratePostPaymentRequest(expiryYear: invalidExpiryYear);
 
         // Act
         var result = _validator.Validate(request);
@@ -147,7 +129,7 @@ public class PaymentValidatorTests
         // Assert
         Assert.False(result.IsValid);
         Assert.Single(result.Errors);
-        Assert.Contains($"{nameof(request.ExpiryMonth)}/{invalidExpiryYear}", result.Errors.Keys);
+        Assert.Contains($"{nameof(request.ExpiryMonth)}/{request.ExpiryYear}", result.Errors.Keys);
     }
 
     #endregion
@@ -160,7 +142,7 @@ public class PaymentValidatorTests
     public void Validate_AmountBounds_ReturnsValidResult(int amount)
     {
         // Arrange
-        var request = CreateValidRequest(amount: amount);
+        var request = ValuesGenerator.GeneratePostPaymentRequest(amount: amount);
 
         // Act
         var result = _validator.Validate(request);
@@ -174,7 +156,7 @@ public class PaymentValidatorTests
     public void Validate_ZeroAmount_ReturnsInvalidResult()
     {
         // Arrange
-        var request = CreateValidRequest(amount: 0);
+        var request = ValuesGenerator.GeneratePostPaymentRequest(amount: 0);
 
         // Act
         var result = _validator.Validate(request);
@@ -195,7 +177,7 @@ public class PaymentValidatorTests
     public void Validate_CvvBounds_ReturnsValidResult(string cvv)
     {
         // Arrange
-        var request = CreateValidRequest(cvv: cvv);
+        var request = ValuesGenerator.GeneratePostPaymentRequest(cvv: cvv);
 
         // Act
         var result = _validator.Validate(request);
@@ -214,14 +196,14 @@ public class PaymentValidatorTests
     public void Validate_InvalidCvv_ReturnsInvalidResult(string? invalidCvv)
     {
         // Arrange
-        var (expiryMonth, expiryYear) = GenerateValidExpiryDate();
+        var (expiryMonth, expiryYear) = ValuesGenerator.GenerateRandomValidExpiryDates();
         var request = new PostPaymentRequest
         {
-            CardNumber = GenerateRandomValidCardNumber(),
+            CardNumber = ValuesGenerator.GenerateRandomValidCardNumber(),
             ExpiryMonth = expiryMonth,
             ExpiryYear = expiryYear,
-            Currency = GenerateRandomValidCurrency(),
-            Amount = GenerateRandomValidAmount(),
+            Currency = ValuesGenerator.GenerateRandomValidCurrency(),
+            Amount = ValuesGenerator.GenerateRandomValidAmount(),
             Cvv = invalidCvv!,
         };
 
@@ -235,59 +217,4 @@ public class PaymentValidatorTests
     }
 
     #endregion
-
-    #region helper methods
-
-    private PostPaymentRequest CreateValidRequest(
-        string? cardNumber = null,
-        int? expiryMonth = null,
-        int? expiryYear = null,
-        AcceptedCurrency? currency = null,
-        int? amount = null,
-        string? cvv = null)
-    {
-        var (expiryMonthRand, expiryYearRand) = GenerateValidExpiryDate();
-
-        return new PostPaymentRequest
-        {
-            CardNumber = cardNumber ?? GenerateRandomValidCardNumber(),
-            ExpiryMonth = expiryMonth ?? expiryMonthRand,
-            ExpiryYear = expiryYear ?? expiryYearRand,
-            Currency = currency ?? GenerateRandomValidCurrency(),
-            Amount = amount ?? _random.Next(0, int.MaxValue) + 1,
-            Cvv = cvv ?? GenerateRandomValidCvv(),
-        };
-    }
-
-    private int GenerateRandomValidAmount()
-    {
-        return _random.Next(0, int.MaxValue) + 1;
-    }
-
-    private AcceptedCurrency GenerateRandomValidCurrency()
-    {
-        var currencies = Enum.GetValues<AcceptedCurrency>();
-        return currencies[_random.Next(currencies.Length)];
-    }
-
-    private string GenerateRandomValidCardNumber()
-    {
-        var length = _random.Next(PaymentValidationConstants.CardNumberMinLength, PaymentValidationConstants.CardNumberMaxLength + 1);
-        return string.Concat(Enumerable.Range(0, length).Select(_ => _random.Next(10)).ToArray());
-    }
-
-    private string GenerateRandomValidCvv()
-    {
-        var length = _random.Next(PaymentValidationConstants.CvvMinLength, PaymentValidationConstants.CvvMaxLength + 1);
-        return string.Concat(Enumerable.Range(0, length).Select(_ => _random.Next(10)).ToArray());
-    }
-
-    private (int ExpiryMonth, int ExpiryYear) GenerateValidExpiryDate()
-    {
-        var date = DateTime.UtcNow.AddMonths(_random.Next(0, 61));
-        return (date.Month, date.Year);
-    }
-
-    #endregion
-
 }

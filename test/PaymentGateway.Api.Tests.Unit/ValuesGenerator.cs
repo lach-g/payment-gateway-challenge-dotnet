@@ -1,6 +1,7 @@
 using PaymentGateway.Api.Constants;
 using PaymentGateway.Api.Models;
 using PaymentGateway.Api.Models.Requests;
+using PaymentGateway.Api.Models.Responses;
 
 namespace PaymentGateway.Api.Tests.Unit;
 
@@ -89,6 +90,22 @@ public static class ValuesGenerator
             Currency = currency ?? GenerateRandomValidCurrency(),
             Amount = amount ?? GenerateRandomValidAmount(),
             Cvv = cvv ?? GenerateRandomValidCvv()
+        };
+    }
+
+    public static PostPaymentResponse GenerateRandomValidPostPaymentResponse()
+    {
+        var (expiryMonth, expiryYear) = GenerateRandomValidExpiryDates();
+
+        return new PostPaymentResponse
+        {
+            Id = Guid.NewGuid(),
+            Status = PaymentStatus.Authorized,
+            CardNumberLastFour = GenerateRandomValidCardNumber()[^4..],
+            ExpiryMonth = expiryMonth,
+            ExpiryYear = expiryYear,
+            Currency = GenerateRandomValidCurrency(),
+            Amount = GenerateRandomValidAmount()
         };
     }
 }

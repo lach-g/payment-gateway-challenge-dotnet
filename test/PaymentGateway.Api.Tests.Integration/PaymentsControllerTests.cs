@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 using PaymentGateway.Api.Controllers;
 using PaymentGateway.Api.Models;
@@ -14,11 +15,12 @@ public class PaymentsControllerTests
 {
     private readonly Random _random = new();
     private readonly HttpClient _client;
+    private readonly ILogger<PaymentsRepository> _logger = new LoggerFactory().CreateLogger<PaymentsRepository>();
     private readonly IPaymentsRepository _paymentsRepository;
 
     public PaymentsControllerTests()
     {
-        _paymentsRepository = new PaymentsRepository();
+        _paymentsRepository = new PaymentsRepository(_logger);
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
         _client = webApplicationFactory.WithWebHostBuilder(builder =>
             builder.ConfigureServices(services => ((ServiceCollection)services)
@@ -40,7 +42,7 @@ public class PaymentsControllerTests
             CardNumberLastFour = string.Concat(Enumerable.Range(4, 4).Select(_ => _random.Next(10)).ToArray()),
             Currency = AcceptedCurrency.USD
         };
-        _paymentsRepository.Add(payment);
+        _paymentsRepository.TryAdd(payment);
 
         // Act
         var response = await _client.GetAsync($"Payments/{payment.Id}");

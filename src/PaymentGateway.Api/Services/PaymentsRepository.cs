@@ -7,33 +7,39 @@ namespace PaymentGateway.Api.Services;
 
 public interface IPaymentsRepository
 {
-    void Add(PostPaymentResponse payment);
+    bool TryAdd(PostPaymentResponse payment);
     bool TryGet(Guid id, [NotNullWhen(true)] out PostPaymentResponse? payment);
 }
 
 public class PaymentsRepository : IPaymentsRepository
 {
     private readonly ConcurrentDictionary<Guid, PostPaymentResponse> _payments = new();
+    private readonly ILogger<PaymentsRepository> _logger;
+
+    public PaymentsRepository(ILogger<PaymentsRepository> logger)
+    {
+        _logger = logger;
+    }
     
     /// <summary>
-    /// Adds a card payment to the repository.
+    /// Adds a card payment to the repository. The payment is stored in-memory and can be retrieved later by its ID.
     /// </summary>
     /// <param name="payment"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
-    public void Add(PostPaymentResponse payment)
+    /// <returns>True if the payment was added successfully, false if a payment with the same ID already exists or if an error occurred.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the payment is null.</exception>
+    public bool TryAdd(PostPaymentResponse payment)
     {
-        if (payment == null)
+        ArgumentNullException.ThrowIfNull(payment, nameof(payment));
+
+        try
         {
-            throw new ArgumentNullException(nameof(payment), "Payment cannot be null.");
+            return _payments.TryAdd(payment.Id, payment);
         }
-
-        if (payment.Id == Guid.Empty)
+        catch (OverflowException ex)
         {
-            throw new ArgumentException("Payment ID cannot be empty.", nameof(payment.Id));
-        } 
-
-        _payments[payment.Id] = payment;
+            _logger.LogError(ex, "Failed to add payment with ID {PaymentId} to repository due to overflow.", payment.Id);
+            return false;
+        }
     }
 
     /// <summary>
@@ -41,7 +47,7 @@ public class PaymentsRepository : IPaymentsRepository
     /// </summary>
     /// <param name="id"></param>
     /// <param name="payment"></param>
-    /// <returns></returns>
+    /// <returns>True if a payment with the given ID exists in the repository, false otherwise.</returns>
     public bool TryGet(Guid id, [NotNullWhen(true)] out PostPaymentResponse? payment)
     {
         return _payments.TryGetValue(id, out payment);

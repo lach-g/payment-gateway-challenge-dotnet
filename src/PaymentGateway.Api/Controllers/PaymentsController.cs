@@ -25,7 +25,7 @@ public class PaymentsController : Controller
     }
 
     [HttpGet("{id:guid}")]
-    public ActionResult<PostPaymentResponse> GetPaymentAsync(Guid id)
+    public ActionResult<PostPaymentResponse> GetPayment(Guid id)
     {
         if (id == Guid.Empty) 
         {

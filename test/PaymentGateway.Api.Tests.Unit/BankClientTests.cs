@@ -10,6 +10,8 @@ using PaymentGateway.Api.Constants;
 using PaymentGateway.Api.Models.Responses;
 using PaymentGateway.Api.Services;
 
+using PaymentGateway.Api.Tests.Common;
+
 using Xunit;
 
 namespace PaymentGateway.Api.Tests.Unit;
@@ -96,7 +98,7 @@ public class BankClientTests
     }
 
     [Fact]
-    public async Task ProcessPaymentAsync_BadRequest_ReturnsValidationError()
+    public async Task ProcessPaymentAsync_BadRequest_ReturnsBankRejectedStatus()
     {
         // Arrange
         var response = CreateHttpResponse(HttpStatusCode.BadRequest);
@@ -107,13 +109,13 @@ public class BankClientTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(BankResultStatus.ValidationError, result.Status);
+        Assert.Equal(BankResultStatus.BankRejected, result.Status);
         Assert.Null(result.Response);
         Assert.NotNull(result.ErrorMessage);
     }
 
     [Fact]
-    public async Task ProcessPaymentAsync_BankReturnsServiceUnavailable_ReturnsUnavailableResult()
+    public async Task ProcessPaymentAsync_BankReturnsBankUnavailable_ReturnsUnavailableResult()
     {
         // Arrange
         var response = CreateHttpResponse(HttpStatusCode.ServiceUnavailable);
@@ -124,7 +126,7 @@ public class BankClientTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(BankResultStatus.ServiceUnavailable, result.Status);
+        Assert.Equal(BankResultStatus.BankUnavailable, result.Status);
         Assert.NotNull(result.ErrorMessage);
     }
 

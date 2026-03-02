@@ -18,6 +18,7 @@ public class PaymentsRepository : IPaymentsRepository
 
     public PaymentsRepository(ILogger<PaymentsRepository> logger)
     {
+        ArgumentNullException.ThrowIfNull(logger);
         _logger = logger;
     }
     

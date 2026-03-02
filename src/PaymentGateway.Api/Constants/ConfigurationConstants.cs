@@ -4,7 +4,7 @@ public static class ConfigurationDefaults
 {
     public static class BankApi
     {
-        public const string BaseUrl = "https://localhost:8080";
+        public const string BaseUrl = "http://localhost:8080";
         public const string PaymentEndpoint = "/payments";
         public const int TimeoutSeconds = 30;
 

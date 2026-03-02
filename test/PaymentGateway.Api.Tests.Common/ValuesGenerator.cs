@@ -1,9 +1,9 @@
-using PaymentGateway.Api.Constants;
+﻿using PaymentGateway.Api.Constants;
 using PaymentGateway.Api.Models;
 using PaymentGateway.Api.Models.Requests;
 using PaymentGateway.Api.Models.Responses;
 
-namespace PaymentGateway.Api.Tests.Unit;
+namespace PaymentGateway.Api.Tests.Common;
 
 public static class ValuesGenerator
 {
@@ -109,3 +109,4 @@ public static class ValuesGenerator
         };
     }
 }
+

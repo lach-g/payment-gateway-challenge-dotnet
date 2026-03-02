@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGateway.Api.Tests.In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGateway.Api.Tests.Unit", "test\PaymentGateway.Api.Tests.Unit\PaymentGateway.Api.Tests.Unit.csproj", "{763822F4-F12E-4C7D-BCB4-9D06141B005A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGateway.Api.Tests.Common", "test\PaymentGateway.Api.Tests.Common\PaymentGateway.Api.Tests.Common.csproj", "{D7E4BCDF-DF01-440E-9059-2592C02E4312}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,18 @@ Global
 		{763822F4-F12E-4C7D-BCB4-9D06141B005A}.Release|x64.Build.0 = Release|Any CPU
 		{763822F4-F12E-4C7D-BCB4-9D06141B005A}.Release|x86.ActiveCfg = Release|Any CPU
 		{763822F4-F12E-4C7D-BCB4-9D06141B005A}.Release|x86.Build.0 = Release|Any CPU
+		{D7E4BCDF-DF01-440E-9059-2592C02E4312}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7E4BCDF-DF01-440E-9059-2592C02E4312}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7E4BCDF-DF01-440E-9059-2592C02E4312}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D7E4BCDF-DF01-440E-9059-2592C02E4312}.Debug|x64.Build.0 = Debug|Any CPU
+		{D7E4BCDF-DF01-440E-9059-2592C02E4312}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D7E4BCDF-DF01-440E-9059-2592C02E4312}.Debug|x86.Build.0 = Debug|Any CPU
+		{D7E4BCDF-DF01-440E-9059-2592C02E4312}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7E4BCDF-DF01-440E-9059-2592C02E4312}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7E4BCDF-DF01-440E-9059-2592C02E4312}.Release|x64.ActiveCfg = Release|Any CPU
+		{D7E4BCDF-DF01-440E-9059-2592C02E4312}.Release|x64.Build.0 = Release|Any CPU
+		{D7E4BCDF-DF01-440E-9059-2592C02E4312}.Release|x86.ActiveCfg = Release|Any CPU
+		{D7E4BCDF-DF01-440E-9059-2592C02E4312}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,5 +81,6 @@ Global
 		{3CD9AAA2-2097-4874-9C40-FFDE26EE8E43} = {F36BD266-CD75-4438-9BF9-CD91CDB18F2B}
 		{3A92D8D6-0359-4752-91AE-D8A59622518A} = {1EF69307-274F-458E-BBE8-4D390512A8C6}
 		{763822F4-F12E-4C7D-BCB4-9D06141B005A} = {1EF69307-274F-458E-BBE8-4D390512A8C6}
+		{D7E4BCDF-DF01-440E-9059-2592C02E4312} = {1EF69307-274F-458E-BBE8-4D390512A8C6}
 	EndGlobalSection
 EndGlobal

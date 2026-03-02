@@ -26,6 +26,9 @@ public class BankClient : IBankClient
 
     public BankClient(ILogger<BankClient> logger, HttpClient httpClient, IOptions<BankClientOptions> options)
     {
+        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(httpClient);
+        ArgumentNullException.ThrowIfNull(options);
         _logger = logger;
         _httpClient = httpClient;
         _paymentEndpoint = options.Value.PaymentEndpoint;
@@ -74,11 +77,11 @@ public class BankClient : IBankClient
                 case HttpStatusCode.BadRequest:
                     var error = await response.Content.ReadAsStringAsync(cancellationToken);
                     _logger.LogError("Bank rejected request: {Error}", error);
-                    return BankResult.ValidationError(error);
+                    return BankResult.BankRejected(error);
 
                 case HttpStatusCode.ServiceUnavailable:
                     _logger.LogWarning("Bank returned 503");
-                    return BankResult.ServiceUnavailable();
+                    return BankResult.BankUnavailable();
 
                 default:
                     _logger.LogError("Unexpected status code from bank: {StatusCode}", response.StatusCode);

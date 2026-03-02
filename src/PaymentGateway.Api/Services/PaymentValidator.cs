@@ -20,6 +20,7 @@ public class PaymentValidator : IPaymentValidator
 
     public PaymentValidator(ILogger<PaymentValidator> logger)
     {
+        ArgumentNullException.ThrowIfNull(logger);
         _logger = logger;
     }
 

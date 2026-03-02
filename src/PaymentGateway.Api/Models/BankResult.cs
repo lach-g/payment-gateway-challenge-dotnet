@@ -18,14 +18,14 @@ public class BankResult
         return new BankResult(BankResultStatus.Success, response);
     }
 
-    public static BankResult ValidationError(string message)
+    public static BankResult BankRejected(string message)
     {
-        return new BankResult(BankResultStatus.ValidationError, errorMessage: message);
+        return new BankResult(BankResultStatus.BankRejected, errorMessage: message);
     }
 
-    public static BankResult ServiceUnavailable()
+    public static BankResult BankUnavailable()
     {
-        return new BankResult(BankResultStatus.ServiceUnavailable, errorMessage: "Bank is unavailable.");
+        return new BankResult(BankResultStatus.BankUnavailable, errorMessage: "Bank is unavailable.");
     }
     
     public static BankResult UnexpectedError(string message)
@@ -37,7 +37,7 @@ public class BankResult
 public enum BankResultStatus
 {
     Success,
-    ValidationError,
-    ServiceUnavailable,
+    BankRejected,
+    BankUnavailable,
     UnexpectedError
 }

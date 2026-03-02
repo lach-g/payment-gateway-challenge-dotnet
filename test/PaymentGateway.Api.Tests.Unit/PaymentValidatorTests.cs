@@ -3,8 +3,7 @@ using PaymentGateway.Api.Models.Requests;
 using Moq;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using PaymentGateway.Api.Models;
-using PaymentGateway.Api.Constants;
+using PaymentGateway.Api.Tests.Common;
 
 namespace PaymentGateway.Api.Tests.Unit;
 

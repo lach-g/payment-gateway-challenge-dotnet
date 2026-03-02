@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\PaymentGateway.Api\PaymentGateway.Api.csproj" />
+    <ProjectReference Include="..\..\test\PaymentGateway.Api.Tests.Common\PaymentGateway.Api.Tests.Common.csproj" />
   </ItemGroup>
 
 </Project>

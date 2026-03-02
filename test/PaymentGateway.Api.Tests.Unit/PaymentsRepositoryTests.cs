@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 
 using PaymentGateway.Api.Services;
+using PaymentGateway.Api.Tests.Common;
 
 using Xunit;
 

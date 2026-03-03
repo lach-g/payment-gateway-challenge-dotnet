@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 
+using PaymentGateway.Api.Enums;
 using PaymentGateway.Api.Models;
 using PaymentGateway.Api.Models.Requests;
 using PaymentGateway.Api.Models.Responses;
@@ -174,6 +175,27 @@ public class PaymentsControllerTests
             x => x.SendPaymentAsync(It.IsAny<BankPaymentRequest>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
+
+    [Fact]
+    public async Task PostPayment_BankRejected_Returns400()
+    {
+        // Arrange
+        var request = ValuesGenerator.GenerateRandomValidPostPaymentRequest();
+        _bankClientMock
+            .Setup(x => x.SendPaymentAsync(It.IsAny<BankPaymentRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(BankResult.BankRejected("Payment request was rejected by the bank"));
+
+        // Act
+        var response = await _client.PostAsJsonAsync("payments", request, JsonOptions);
+        var result = await response.Content.ReadFromJsonAsync<ErrorResponse>(JsonOptions);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.NotNull(result);
+        Assert.NotNull(result!.KeyValuePairs);
+        Assert.Equal("BankRejected", result!.KeyValuePairs!["Outcome"]);
+    }
+
 
     [Fact]
     public async Task PostPayment_BankUnavailable_Returns502()

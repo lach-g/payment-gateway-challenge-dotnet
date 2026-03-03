@@ -1,4 +1,6 @@
-﻿namespace PaymentGateway.Api.Models.Responses;
+﻿using PaymentGateway.Api.Enums;
+
+namespace PaymentGateway.Api.Models.Responses;
 
 /// <summary>
 /// Merchant-facing response after processing a card payment.

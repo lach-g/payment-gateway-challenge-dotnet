@@ -25,10 +25,14 @@ public class PaymentValidator : IPaymentValidator
     }
 
     /// <summary>
-    /// Validates the incoming payment request for required fields, correct formats, and business rules.
+    /// Validates a payment request against required fields, format constraints, and business rules.
     /// </summary>
-    /// <param name="request"></param>
-    /// <returns></returns>
+    /// <param name="request">The payment request to validate.</param>
+    /// <returns>
+    /// A ValidationResult where ValidationResult.IsValid true> when all rules pass, 
+    /// or false with a populated ValidationResult.Errors dictionary keyed by field name when one 
+    /// or more rules fail.
+    /// </returns>
     public ValidationResult Validate(PostPaymentRequest request)
     {
         var errors = new Dictionary<string, string>();

@@ -4,6 +4,8 @@ using System.Text.Json.Serialization;
 
 using Microsoft.Extensions.Options;
 
+using PaymentGateway.Api.Models;
+
 using PaymentGateway.Api.Models.Requests;
 using PaymentGateway.Api.Models.Responses;
 
@@ -34,6 +36,15 @@ public class BankClient : IBankClient
         _paymentEndpoint = options.Value.PaymentEndpoint;
     }
 
+    /// <summary>
+    /// Sends a payment request to the bank and returns the result.
+    /// </summary>
+    /// <param name="request">The bank-formatted payment request.</param>
+    /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+    /// <returns>
+    /// A BankResult. HTTP communication failures and unexpected responses are captured and 
+    /// returned as BankResultStatus.UnexpectedError rather than thrown.
+    /// </returns>
     public async Task<BankResult> SendPaymentAsync(BankPaymentRequest request, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation(

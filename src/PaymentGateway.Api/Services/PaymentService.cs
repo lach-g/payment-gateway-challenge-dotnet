@@ -1,17 +1,8 @@
-using PaymentGateway.Api.Models;
+using PaymentGateway.Api.Enums;
 using PaymentGateway.Api.Models.Requests;
 using PaymentGateway.Api.Models.Responses;
 
 namespace PaymentGateway.Api.Services;
-
-public enum PaymentOutcome
-{
-    Authorized,
-    Declined,
-    ValidationError,
-    BankUnavailable,
-    UnexpectedError,
-}
 
 public class PaymentResult
 {
@@ -24,7 +15,7 @@ public class PaymentResult
 public interface IPaymentService
 {
     Task<PaymentResult> ProcessAsync(PostPaymentRequest request, CancellationToken cancellationToken = default);
-    Task<(bool Found, PostPaymentResponse? Payment)> GetAsync(Guid id, CancellationToken cancellationToken = default);
+    (bool Found, PostPaymentResponse? Payment) Get(Guid id);
 }
 
 public class PaymentService : IPaymentService
@@ -47,13 +38,23 @@ public class PaymentService : IPaymentService
         _paymentValidator = paymentValidator;
     }
 
+    /// <summary>
+    /// Validates the payment request and if valid forwards it to the bank for processing.
+    /// The resulting payment is stored in the repository on success.
+    /// </summary>
+    /// <param name="request">The payment request containing transaction request details.</param>
+    /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+    /// <returns>
+    /// A PaymentResult describing the processing outcome.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">Thrown if the bank client returns an unrecognised <see cref="BankResultStatus"/> value.</exception>
     public async Task<PaymentResult> ProcessAsync(PostPaymentRequest request, CancellationToken cancellationToken = default)
     {
         // Validate
         var validationResult = _paymentValidator.Validate(request);
         if (!validationResult.IsValid)
         {
-            _logger.LogWarning("Payment validation failed for card ending in {CardNumberLastFour}. Errors: {Errors}", request.CardNumber[^4..], validationResult.Errors);
+            _logger.LogWarning("Payment validation failed for card ending in {CardNumberLastFour}. Errors: {Errors}", request.CardNumber[^4..] ?? "????", validationResult.Errors);
             return new PaymentResult
             {
                 Outcome = PaymentOutcome.ValidationError,
@@ -62,15 +63,7 @@ public class PaymentService : IPaymentService
         }
 
         // Map payment request to bank request
-        var bankRequest = new BankPaymentRequest
-        {
-            CardNumber = request.CardNumber,
-            // TODO: PostPaymentRequest to BankPaymentRequest mapping
-            ExpiryDate = $"{request.ExpiryMonth:D2}/{request.ExpiryYear}",
-            Amount = request.Amount,
-            Currency = request.Currency,
-            Cvv = request.Cvv
-        };
+        var bankRequest = BankPaymentRequest.From(request);
 
         // Call bank
         var bankResult = await _bankClient.SendPaymentAsync(bankRequest, cancellationToken);
@@ -78,7 +71,7 @@ public class PaymentService : IPaymentService
         var outcome = bankResult.Status switch
         {
             BankResultStatus.Success => bankResult.Response!.Authorized ? PaymentOutcome.Authorized : PaymentOutcome.Declined,
-            BankResultStatus.BankRejected => PaymentOutcome.ValidationError,
+            BankResultStatus.BankRejected => PaymentOutcome.BankRejected,
             BankResultStatus.BankUnavailable => PaymentOutcome.BankUnavailable,
             BankResultStatus.UnexpectedError => PaymentOutcome.UnexpectedError,
             _ => throw new InvalidOperationException($"Unexpected bank result status: {bankResult.Status}")
@@ -104,6 +97,7 @@ public class PaymentService : IPaymentService
         if (!_paymentsRepository.TryAdd(paymentResponse))
         {
             _logger.LogError("Failed to add payment response to repository for card ending in {CardNumberLastFour}.", request.CardNumber[^4..]);
+            return new PaymentResult { Outcome = PaymentOutcome.UnexpectedError, ErrorMessage = "Failed to add payment response to repository" };
         }
 
         return new PaymentResult
@@ -113,7 +107,15 @@ public class PaymentService : IPaymentService
         };
     }
 
-    public async Task<(bool Found, PostPaymentResponse? Payment)> GetAsync(Guid id, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Attempts to retrieve a previously processed payment from the repository by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the payment to retrieve.</param>
+    /// <returns>
+    /// A  tuple where Found is true and Payment contains the payment details when the ID exists;
+    /// otherwise Found is false and Payment is null.
+    /// </returns>
+    public (bool Found, PostPaymentResponse? Payment) Get(Guid id)
     {
         if (_paymentsRepository.TryGet(id, out var payment))
         {

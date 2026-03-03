@@ -39,7 +39,7 @@ public class PaymentsController : Controller
     [HttpGet("{id:guid}")]
     public ActionResult<PostPaymentResponse> GetPayment(Guid id)
     {
-        if (id == Guid.Empty) 
+        if (id == Guid.Empty)
         {
             _logger.LogWarning("Received request for payment with empty GUID.");
             return BadRequest(new ErrorResponse { Message = "Payment ID cannot be empty." });
@@ -76,17 +76,17 @@ public class PaymentsController : Controller
         switch (result.Outcome)
         {
             case PaymentOutcome.Authorized or PaymentOutcome.Declined:
-                _logger.LogInformation("Returning 201: payment request processed successfully for card ending in {CardNumberLastFour}. Payment ID: {PaymentId}, Status: {Status}", 
-                result.Payment!.CardNumberLastFour, 
-                result.Payment.Id, 
+                _logger.LogInformation("Returning 201: payment request processed successfully for card ending in {CardNumberLastFour}. Payment ID: {PaymentId}, Status: {Status}",
+                result.Payment!.CardNumberLastFour,
+                result.Payment.Id,
                 result.Payment.Status);
                 return new CreatedAtActionResult(nameof(GetPayment), "Payments", new { id = result.Payment.Id }, result.Payment);
             case PaymentOutcome.ValidationError:
                 _logger.LogWarning("Returning 400: payment request failed validation.");
                 return StatusCode(StatusCodes.Status400BadRequest, new ErrorResponse { Message = "Validation failed.", KeyValuePairs = result.ValidationErrors });
             case PaymentOutcome.BankRejected:
-                _logger.LogWarning("Returning 400: bank rejected payment for card ending in {CardNumberLastFour}. Reason: {ErrorMessage}", 
-                request.CardNumber[^4..], 
+                _logger.LogWarning("Returning 400: bank rejected payment for card ending in {CardNumberLastFour}. Reason: {ErrorMessage}",
+                request.CardNumber[^4..],
                 result.ErrorMessage);
                 return StatusCode(StatusCodes.Status400BadRequest, new ErrorResponse { Message = "Payment was rejected by the bank.", KeyValuePairs = new Dictionary<string, string> { { "Outcome", result.Outcome.ToString() }, { "ErrorMessage", result.ErrorMessage ?? "N/A" } } });
             case PaymentOutcome.BankUnavailable:

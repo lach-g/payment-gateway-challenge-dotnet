@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 using Moq;
 
 using PaymentGateway.Api.Enums;
@@ -112,7 +113,7 @@ public class PaymentsControllerTests
             {
                 Authorized = true,
                 AuthorizationCode = Guid.NewGuid().ToString(),
-                
+
             }));
 
         // Act

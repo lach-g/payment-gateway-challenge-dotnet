@@ -10,7 +10,7 @@ public static class ConfigurationDefaults
 
         public static class RetryPolicy
         {
-            public const int  MaxRetries = 3;
+            public const int MaxRetries = 3;
             public const int BaseDelayMilliseconds = 200;
         }
     }

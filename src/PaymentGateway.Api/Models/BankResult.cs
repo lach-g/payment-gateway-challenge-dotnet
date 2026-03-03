@@ -30,7 +30,7 @@ public class BankResult
     {
         return new BankResult(BankResultStatus.BankUnavailable, errorMessage: "Bank is unavailable.");
     }
-    
+
     public static BankResult UnexpectedError(string message)
     {
         return new BankResult(BankResultStatus.UnexpectedError, errorMessage: message);

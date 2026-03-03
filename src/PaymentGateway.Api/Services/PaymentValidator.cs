@@ -89,7 +89,7 @@ public class PaymentValidator : IPaymentValidator
     {
         var now = DateTime.UtcNow;
         return month >= 1 &&
-            month <= 12 && 
+            month <= 12 &&
             (year > now.Year || (year == now.Year && month >= now.Month));
     }
 

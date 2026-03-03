@@ -1,0 +1,63 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/PaymentGateway.sln",
+                "/property:GenerateFullPaths=true",
+                "/p:Configuration=Debug",
+                "/p:Platform=Any CPU"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "run",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/src/PaymentGateway.Api/PaymentGateway.Api.csproj",
+                "--configuration",
+                "Debug"
+            ],
+            "group": {
+                "kind": "none",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "test",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "test",
+                "${workspaceFolder}/test/PaymentGateway.Api.Tests/PaymentGateway.Api.Tests.csproj",
+                "--configuration",
+                "Debug"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

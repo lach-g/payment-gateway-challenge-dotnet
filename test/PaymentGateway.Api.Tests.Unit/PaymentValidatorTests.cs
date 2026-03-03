@@ -1,9 +1,12 @@
-﻿using PaymentGateway.Api.Services;
-using PaymentGateway.Api.Models.Requests;
+﻿using Microsoft.Extensions.Logging;
+
 using Moq;
-using Microsoft.Extensions.Logging;
-using Xunit;
+
+using PaymentGateway.Api.Models.Requests;
+using PaymentGateway.Api.Services;
 using PaymentGateway.Api.Tests.Common;
+
+using Xunit;
 
 namespace PaymentGateway.Api.Tests.Unit;
 

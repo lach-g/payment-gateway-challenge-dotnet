@@ -76,7 +76,7 @@ public static class ValuesGenerator
         int? expiryMonth = null,
         int? expiryYear = null,
         AcceptedCurrency? currency = null,
-        int? amount = null, 
+        int? amount = null,
         string? cvv = null
     )
     {
@@ -109,4 +109,3 @@ public static class ValuesGenerator
         };
     }
 }
-

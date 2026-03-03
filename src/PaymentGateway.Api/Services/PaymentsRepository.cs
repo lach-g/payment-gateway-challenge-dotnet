@@ -21,7 +21,7 @@ public class PaymentsRepository : IPaymentsRepository
         ArgumentNullException.ThrowIfNull(logger);
         _logger = logger;
     }
-    
+
     /// <summary>
     /// Adds a card payment to the repository. The payment is stored in-memory and can be retrieved later by its ID.
     /// </summary>

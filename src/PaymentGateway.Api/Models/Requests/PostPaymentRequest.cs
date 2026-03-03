@@ -1,4 +1,6 @@
-﻿namespace PaymentGateway.Api.Models.Requests;
+﻿using PaymentGateway.Api.Enums;
+
+namespace PaymentGateway.Api.Models.Requests;
 
 /// <summary>
 /// Merchant-facing request to process a card payment.

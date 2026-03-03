@@ -10,6 +10,13 @@ namespace PaymentGateway.Api;
 
 public static class BankClientExtensions
 {
+    /// <summary>
+    /// Registers the IBankClient implementation and its HTTP client with resilience policies
+    /// sourced from configuration.
+    /// </summary>
+    /// <param name="services">The service collection to add the bank client to.</param>
+    /// <param name="configuration">The application configuration used to bind.</param>
+    /// <returns>The services instance to allow method chaining.</returns>
     public static IServiceCollection AddBankClient(
         this IServiceCollection services,
         IConfiguration configuration)

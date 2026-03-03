@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 
 using PaymentGateway.Api.Constants;
-using PaymentGateway.Api.Models.Responses;
+using PaymentGateway.Api.Enums;
 using PaymentGateway.Api.Services;
 
 using PaymentGateway.Api.Tests.Common;

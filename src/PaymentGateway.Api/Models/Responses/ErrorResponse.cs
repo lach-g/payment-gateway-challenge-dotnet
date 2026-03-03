@@ -6,6 +6,5 @@ namespace PaymentGateway.Api.Models.Responses;
 public class ErrorResponse
 {
     public required string Message { get; set; }
-    // TODO: Maybe move back to object?
     public Dictionary<string, string>? KeyValuePairs { get; set; }
 }

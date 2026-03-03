@@ -1,4 +1,7 @@
-namespace PaymentGateway.Api.Models.Responses;
+using PaymentGateway.Api.Enums;
+using PaymentGateway.Api.Models.Responses;
+
+namespace PaymentGateway.Api.Models;
 
 public class BankResult
 {
@@ -32,12 +35,4 @@ public class BankResult
     {
         return new BankResult(BankResultStatus.UnexpectedError, errorMessage: message);
     }
-}
-
-public enum BankResultStatus
-{
-    Success,
-    BankRejected,
-    BankUnavailable,
-    UnexpectedError
 }
